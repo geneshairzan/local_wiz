@@ -215,17 +215,22 @@ const server = http.createServer(async (req, res) => {
       const found = await discover();
       const store = loadStore();
       const now = new Date().toISOString();
-      // best-effort hardware identity per light (parallel, keeps prior sys on timeout)
+      // best-effort hardware identity + capability per light (parallel, keeps prior on timeout)
       const withSys = await Promise.all(found.map(async (l) => {
-        const s = await wizCall(l.ip, 'getSystemConfig', {});
-        const r = s.ok && s.data && s.data.result;
-        const sys = r ? { roomId: r.roomId, homeId: r.homeId, module: r.moduleName, fw: r.fwVersion }
-                      : (store[l.mac] && store[l.mac].sys) || null;
-        return Object.assign({}, l, { sys });
+        const prev = store[l.mac] || {};
+        const [s, m] = await Promise.all([wizCall(l.ip, 'getSystemConfig', {}), wizCall(l.ip, 'getModelConfig', {})]);
+        const sr = s.ok && s.data && s.data.result;
+        const mr = m.ok && m.data && m.data.result;
+        const sys = sr ? { roomId: sr.roomId, homeId: sr.homeId, module: sr.moduleName, fw: sr.fwVersion }
+                       : (prev.sys || null);
+        // lightType 1 = RGB, 2 = tunable-white only (e.g. k1 ESP24_SHTWC_01). Unknown → assume color.
+        const color = mr ? (mr.lightType === 1)
+                         : (prev.caps ? prev.caps.color !== false : /shrgb/i.test(String(sys && sys.module || '')) || !sys);
+        return Object.assign({}, l, { sys, caps: { color: !!color } });
       }));
       for (const l of withSys) {
         const prev = store[l.mac] || { mac: l.mac };
-        store[l.mac] = Object.assign({}, prev, { mac: l.mac, ip: l.ip, pilot: l.pilot, sys: l.sys, lastSeen: now, online: true }, resolveMeta(l.mac, l.sys));
+        store[l.mac] = Object.assign({}, prev, { mac: l.mac, ip: l.ip, pilot: l.pilot, sys: l.sys, caps: l.caps, lastSeen: now, online: true }, resolveMeta(l.mac, l.sys));
       }
       // mark offline ones (in store but not seen this scan)
       const seen = new Set(found.map((l) => l.mac));
