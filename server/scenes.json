@@ -1,0 +1,55 @@
+[
+  {
+    "id": "mvnk8z9x",
+    "name": "party",
+    "target": {
+      "type": "room",
+      "room": "Bedroom"
+    },
+    "steps": [
+      {
+        "hex": "#ff0000",
+        "secs": 1,
+        "off": false
+      },
+      {
+        "hex": "#0000ff",
+        "secs": 2,
+        "off": true
+      },
+      {
+        "hex": "#ff0000",
+        "secs": 2,
+        "off": false
+      }
+    ],
+    "loop": true
+  },
+  {
+    "id": "mvnklcmy",
+    "name": "rb-off",
+    "steps": [
+      {
+        "hex": "#ff0000",
+        "secs": 1,
+        "off": false
+      },
+      {
+        "hex": "#000000",
+        "secs": 2,
+        "off": true
+      },
+      {
+        "hex": "#0000ff",
+        "secs": 2,
+        "off": false
+      },
+      {
+        "hex": "#000000",
+        "secs": 3,
+        "off": true
+      }
+    ],
+    "loop": true
+  }
+]

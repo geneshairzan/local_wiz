@@ -1,0 +1,10 @@
+# runtime discovery cache (rebuilt on every scan, reseeds from KNOWN in code)
+server/lights.json
+
+# secrets / one-off exports (may contain presigned URLs + tokens)
+wiz.txt
+
+# runtime / tooling
+node_modules/
+*.log
+.DS_Store
