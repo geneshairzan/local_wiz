@@ -20,21 +20,20 @@ docker run -d --name p_wiz --restart unless-stopped --network host \
 # → http://<host>:10000/
 ```
 
-`--network host` is required: UDP broadcast discovery (port 38899) cannot reach LAN bulbs from a bridged network. The two JSON bind mounts keep lights cache + scenes across recreates. TLS stays off inside (no certs in image).
+`--network host` is required: UDP broadcast discovery (port 38899) cannot reach LAN bulbs from a bridged network. The two JSON bind mounts keep lights cache + scenes across recreates. HTTP only, no TLS.
 
 ## Run (bare node)
 
 ```sh
-JARVIS_PORT=8091 node server/index.js
+PORT=10000 node server/index.js
 ```
 
 ## Env
 
 | var | default | notes |
 |---|---|---|
-| `JARVIS_PORT` | `8091` | HTTP port |
-| `JARVIS_HOST` | `0.0.0.0` | bind |
-| `JARVIS_TLS_PORT` | `8444` | HTTPS, only if `.../p_hermes/jarvis/server/certs/` exists, else off |
+| `PORT` | `10000` | HTTP port |
+| `HOST` | `0.0.0.0` | bind |
 
 ## API
 

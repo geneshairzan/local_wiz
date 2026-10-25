@@ -1,13 +1,12 @@
 // p_wiz server: UDP control plane for WiZ lights + static UI.
 // No dependencies — node core modules only (dgram + http + fs).
 const http = require('http');
-const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const dgram = require('dgram');
 
-const PORT = process.env.JARVIS_PORT || 8091; // distinct from jarvis 8090
-const HOST = process.env.JARVIS_HOST || '0.0.0.0';
+const PORT = process.env.PORT || 10000;
+const HOST = process.env.HOST || '0.0.0.0';
 const WIZ_PORT = 38899;
 const PUBLIC = path.join(__dirname, '..', 'public');
 const STORE_PATH = path.join(__dirname, 'lights.json');
@@ -316,10 +315,3 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => console.log('p_wiz on ' + HOST + ':' + PORT));
-try {
-  const tlsPort = process.env.JARVIS_TLS_PORT || 8444;
-  https.createServer({
-    key: fs.readFileSync('/mnt/data/web/p_hermes/jarvis/server/certs/key.pem'),
-    cert: fs.readFileSync('/mnt/data/web/p_hermes/jarvis/server/certs/cert.pem'),
-  }, (q, r) => server.emit('request', q, r)).listen(tlsPort, HOST, () => console.log('p_wiz TLS on ' + HOST + ':' + tlsPort));
-} catch (e) { console.log('TLS off: ' + e.message); }
